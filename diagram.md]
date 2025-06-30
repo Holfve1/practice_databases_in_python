@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant t as terminal
+    participant app as Main program (in app.py)
+    participant ar as __databaseConnection__ class <br /> (in lib/__database_connection__.py)
+    participant db_conn as __AlbumRepository__ class in (in lib/__album_repository__.py)
+    participant db as Postgres database
+
+    Note left of t: Flow of time <br />⬇ <br /> ⬇ <br /> ⬇ 
+
+    t->>app: Runs `python __app.py__`
+    app->>db_conn: Opens connection to database by calling __connect__ method on __DatabaseConnection__
+    db_conn->>db_conn: Opens database connection using PG and stores the connection
+    app->>ar: Calls __all__ method on __BookRepository__
+    ar->>db_conn: Sends SQL query by calling __execute__ method on __DatabaseConnection__
+    db_conn->>db: Sends query to database via the open database connection
+    db->>db_conn: Returns an __list__ of __dicts__, one for each row of the __books__ table
+
+    db_conn->>ar: Returns an __list__ of __dicts__, one for each row of the __books__ table
+    loop 
+        ar->>ar: Loops through __list__ and creates a __book__ object for every row
+    end
+    ar->>app: Returns __list__ of __book__ objects
+    app->>t: Prints list of __books__ to terminal
